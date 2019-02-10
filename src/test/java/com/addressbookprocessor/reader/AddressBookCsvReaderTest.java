@@ -1,6 +1,6 @@
 package com.addressbookprocessor.reader;
 
-import com.addressbookprocessor.domain.AddressEntry;
+import com.addressbookprocessor.domain.Person;
 import com.addressbookprocessor.domain.Gender;
 import com.addressbookprocessor.reader.exception.ProvidedFileHasErrorException;
 import org.hamcrest.Matchers;
@@ -32,18 +32,18 @@ public class AddressBookCsvReaderTest {
     private AddressBookCsvReader csvReader = new AddressBookCsvReader();
 
     @Test
-    public void shouldReadAddressEntriesFromCorrectFormattedCSV() {
+    public void shouldReadPersonsFromCorrectFormattedCSV() {
 
         String testFirstEntryPersonName = "Bill McKnight";
         Gender testFirstEntryPersonGender = Male;
         LocalDate testFirstEntryPersonBirth = of(1977, 03, 16);
 
-        List<AddressEntry> addressEntries = csvReader.readAddressEntriesFromCsv(CORRECT_CSV);
+        List<Person> persons = csvReader.readPersonsFromCsv(CORRECT_CSV);
 
-        assertThat(addressEntries, Matchers.hasSize(5));
-        assertThat(addressEntries.get(0), hasProperty("name", Matchers.equalTo(testFirstEntryPersonName)));
-        assertThat(addressEntries.get(0), hasProperty("gender", Matchers.equalTo(testFirstEntryPersonGender)));
-        assertThat(addressEntries.get(0), hasProperty("birthDate", Matchers.equalTo(testFirstEntryPersonBirth)));
+        assertThat(persons, Matchers.hasSize(5));
+        assertThat(persons.get(0), hasProperty("name", Matchers.equalTo(testFirstEntryPersonName)));
+        assertThat(persons.get(0), hasProperty("gender", Matchers.equalTo(testFirstEntryPersonGender)));
+        assertThat(persons.get(0), hasProperty("birthDate", Matchers.equalTo(testFirstEntryPersonBirth)));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class AddressBookCsvReaderTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("Given addressBookFilePath is blank");
 
-        csvReader.readAddressEntriesFromCsv(testPath);
+        csvReader.readPersonsFromCsv(testPath);
     }
 
     @Test
@@ -65,7 +65,7 @@ public class AddressBookCsvReaderTest {
         expectedException.expect(IllegalArgumentException.class);
         expectedException.expectMessage("Given addressBookFilePath is blank");
 
-        csvReader.readAddressEntriesFromCsv(testPath);
+        csvReader.readPersonsFromCsv(testPath);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class AddressBookCsvReaderTest {
         expectedException.expect(ProvidedFileHasErrorException.class);
         expectedException.expectMessage("File on provided path cannot be read");
 
-        csvReader.readAddressEntriesFromCsv(NOTEXISTENT_CSV);
+        csvReader.readPersonsFromCsv(NOTEXISTENT_CSV);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class AddressBookCsvReaderTest {
         expectedException.expect(ProvidedFileHasErrorException.class);
         expectedException.expectMessage("File on provided path cannot be read: CSV structure/data unexpected");
 
-        csvReader.readAddressEntriesFromCsv(MALFORMED_CSV_GENDER);
+        csvReader.readPersonsFromCsv(MALFORMED_CSV_GENDER);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class AddressBookCsvReaderTest {
         expectedException.expect(ProvidedFileHasErrorException.class);
         expectedException.expectMessage("File on provided path cannot be read: CSV structure/data unexpected");
 
-        csvReader.readAddressEntriesFromCsv(MALFORMED_CSV_DATE);
+        csvReader.readPersonsFromCsv(MALFORMED_CSV_DATE);
     }
 
     @Test
@@ -101,6 +101,6 @@ public class AddressBookCsvReaderTest {
         expectedException.expect(ProvidedFileHasErrorException.class);
         expectedException.expectMessage("File on provided path cannot be read: CSV structure/data unexpected");
 
-        csvReader.readAddressEntriesFromCsv(MALFORMED_CSV_TWO_COLUMNS);
+        csvReader.readPersonsFromCsv(MALFORMED_CSV_TWO_COLUMNS);
     }
 }

@@ -1,7 +1,7 @@
 package com.addressbookprocessor.reader;
 
-import com.addressbookprocessor.domain.AddressEntry;
 import com.addressbookprocessor.domain.Gender;
+import com.addressbookprocessor.domain.Person;
 import com.addressbookprocessor.reader.exception.ProvidedFileHasErrorException;
 import io.vavr.control.Try;
 import org.apache.commons.csv.CSVFormat;
@@ -31,7 +31,7 @@ public class AddressBookCsvReader {
 
     private static final String DATE_FORMAT = "d/M/yy";
 
-    public List<AddressEntry> readAddressEntriesFromCsv(final String addressBookFilePath) {
+    public List<Person> readPersonsFromCsv(final String addressBookFilePath) {
 
         boolean isParamValid = isNotBlank(addressBookFilePath);
         if (!isParamValid) {
@@ -40,42 +40,42 @@ public class AddressBookCsvReader {
         }
 
         final CSVParser addressBookFileParser = intialiseCSVParser(addressBookFilePath);
-        List<AddressEntry> addressEntries = parseAddressEntries(addressBookFileParser);
+        List<Person> persons = parsePersons(addressBookFileParser);
 
-        return addressEntries;
+        return persons;
     }
 
-    private List<AddressEntry> parseAddressEntries(CSVParser addressBookFileParser) {
+    private List<Person> parsePersons(CSVParser addressBookFileParser) {
 
-        List<AddressEntry> addressEntries = new ArrayList<>();
-        for (CSVRecord addressEntryRecord : addressBookFileParser) {
+        List<Person> persons = new ArrayList<>();
+        for (CSVRecord personEntry : addressBookFileParser) {
 
-            AddressEntry addressEntry =
+            Person person =
                     Try.of(() -> {
 
-                        String fullName = addressEntryRecord.get(0);
-                        Gender gender = valueOf(addressEntryRecord.get(1));
-                        LocalDate birthDate = parse(addressEntryRecord.get(2), ofPattern(DATE_FORMAT));
+                        String fullName = personEntry.get(0);
+                        Gender gender = valueOf(personEntry.get(1));
+                        LocalDate birthDate = parse(personEntry.get(2), ofPattern(DATE_FORMAT));
 
                         boolean isBirthdateInFuture = birthDate.isAfter(now());
                         if (isBirthdateInFuture) {
                             birthDate = birthDate.minus(100, YEARS);
                         }
 
-                        return new AddressEntry(fullName, gender, birthDate);
+                        return new Person(fullName, gender, birthDate);
                     })
                     .onFailure(ex -> {
 
                         LOGGER.log(
                                 SEVERE,
-                                join("File on provided path cannot be read: CSV structure/data unexpected of: ", addressEntryRecord),
+                                join("File on provided path cannot be read: CSV structure/data unexpected of: ", personEntry),
                                 ex);
                         throw new ProvidedFileHasErrorException("File on provided path cannot be read: CSV structure/data unexpected");
                     })
                     .get();
-            addressEntries.add(addressEntry);
+            persons.add(person);
         }
-        return addressEntries;
+        return persons;
     }
 
     private CSVParser intialiseCSVParser(String addressBookFilePath) {

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @ToString
-public class AddressEntry {
+public class Person {
 
     private String name;
 
