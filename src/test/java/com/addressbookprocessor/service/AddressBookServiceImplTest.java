@@ -77,6 +77,36 @@ public class AddressBookServiceImplTest {
     }
 
     @Test
+    public void shouldThrowExceptionWhenPersonListLeftNullOnCountPersonOfGender() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Persons list must be set");
+
+        AddressBookServiceImpl localService = new AddressBookServiceImpl();
+        localService.countPersonsOfGender(Female);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenPersonListLeftNullOnGetOldestPerson() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Persons list must be set");
+
+        AddressBookServiceImpl localService = new AddressBookServiceImpl();
+        localService.getOldestPerson();
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenPersonListLeftNullOnGetDayDifferenceOfBirth() {
+
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Persons list must be set");
+
+        AddressBookServiceImpl localService = new AddressBookServiceImpl();
+        localService.getDaysPersonAIsOlderPersonB("", "");
+    }
+
+    @Test
     public void shouldThrowExceptionWhenCountPersonsOfGenderParamIsNull() {
 
         expectedException.expect(IllegalArgumentException.class);

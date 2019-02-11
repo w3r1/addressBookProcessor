@@ -2,7 +2,8 @@ package com.addressbookprocessor.service;
 
 import com.addressbookprocessor.domain.Gender;
 import com.addressbookprocessor.domain.Person;
-import com.addressbookprocessor.reader.AddressBookCsvReader;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.join;
 
+@Setter
+@NoArgsConstructor
 public class AddressBookServiceImpl implements AddressBookService {
 
     private static final Logger LOGGER = Logger.getLogger(AddressBookServiceImpl.class.getName());
@@ -21,21 +24,18 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     public AddressBookServiceImpl(List<Person> persons) {
 
-        boolean isPersonsListValid = persons != null;
-        if (!isPersonsListValid) {
-            LOGGER.severe("Persons list not given");
-            throw new IllegalArgumentException("Persons list must be set");
-        }
-
         this.persons = persons;
+        validatePersons();
     }
 
     @Override
     public Long countPersonsOfGender(Gender gender) {
 
+        validatePersons();
+
         boolean isParamValid = gender != null;
         if (!isParamValid) {
-            LOGGER.severe("Gender not given");
+            LOGGER.warning("Gender not given");
             throw new IllegalArgumentException("Gender must be given");
         }
 
@@ -46,6 +46,8 @@ public class AddressBookServiceImpl implements AddressBookService {
 
     @Override
     public Optional<Person> getOldestPerson() {
+
+        validatePersons();
 
         return persons.stream()
                 .sorted((p1, p2) -> {
@@ -68,9 +70,11 @@ public class AddressBookServiceImpl implements AddressBookService {
     @Override
     public Long getDaysPersonAIsOlderPersonB(String personAName, String personBName) {
 
+        validatePersons();
+
         boolean areParamsValid = isNotBlank(personAName) && isNotBlank(personBName);
         if (!areParamsValid) {
-            LOGGER.severe("Person name are (A and/or B) not given");
+            LOGGER.warning("Person name are (A and/or B) not given");
             throw new IllegalArgumentException("PersonA and B names must be given");
         }
 
@@ -83,11 +87,20 @@ public class AddressBookServiceImpl implements AddressBookService {
         return calculateDaysBetweenPersons(persons, personAName, personBName);
     }
 
+    private void validatePersons() {
+
+        boolean isPersonsListValid = persons != null;
+        if (!isPersonsListValid) {
+            LOGGER.warning("Persons list not given");
+            throw new IllegalArgumentException("Persons list must be set");
+        }
+    }
+
     private Long calculateDaysBetweenPersons(List<Person> persons, String personAName, String personBName) {
 
         boolean areTwoPersonFound = persons.size() == 2;
         if (!areTwoPersonFound) {
-            LOGGER.severe(join("Inaccurate sub results: Less or more then 2 peope found for ", personAName, " and ", personBName));
+            LOGGER.warning(join("Inaccurate sub results: Less or more then 2 peope found for ", personAName, " and ", personBName));
             throw new IllegalArgumentException("Less than or more than 2 people found");
         }
 
@@ -101,7 +114,7 @@ public class AddressBookServiceImpl implements AddressBookService {
         } else if (isPerson2PersonA) {
             return DAYS.between(person2.getBirthDate(), person1.getBirthDate());
         } else {
-            LOGGER.severe(join("Inaccurate sub results: One person found more times for ", personAName, " or ", personBName));
+            LOGGER.warning(join("Inaccurate sub results: One person found more times for ", personAName, " or ", personBName));
             throw new IllegalArgumentException("Person A or B not found");
         }
     }
