@@ -35,7 +35,7 @@ public class AddressBookCsvReader {
 
         boolean isParamValid = isNotBlank(addressBookFilePath);
         if (!isParamValid) {
-            LOGGER.severe("Given addressBookFilePath is blank");
+            LOGGER.warning("Given addressBookFilePath is blank");
             throw new IllegalArgumentException("Given addressBookFilePath is blank");
         }
 
